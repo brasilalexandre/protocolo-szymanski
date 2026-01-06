@@ -11,7 +11,9 @@ import {
   Dumbbell,
   Sofa,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  X,
+  Maximize2
 } from 'lucide-react';
 
 // Componente de Cronômetro Simples
@@ -64,7 +66,7 @@ const Timer = ({ targetSeconds = 0, label }) => {
 };
 
 // Componente de Card de Exercício
-const ExerciseCard = ({ exercise, onToggleSet, index }) => {
+const ExerciseCard = ({ exercise, onToggleSet, index, onImageClick }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -89,13 +91,24 @@ const ExerciseCard = ({ exercise, onToggleSet, index }) => {
         <div className="p-4">
           {/* Área Visual (Imagem ou Placeholder) */}
           <div className="mb-4 bg-gray-950 rounded-lg p-4 border border-gray-800 flex flex-col md:flex-row gap-4">
-            <div className="w-full md:w-1/3 h-48 bg-gray-800 rounded flex items-center justify-center relative overflow-hidden group">
+            <div 
+              className="w-full md:w-1/3 h-48 bg-gray-800 rounded flex items-center justify-center relative overflow-hidden group cursor-zoom-in"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (exercise.image) onImageClick(exercise.image);
+              }}
+            >
                {exercise.image ? (
-                 <img 
-                   src={exercise.image} 
-                   alt={exercise.name} 
-                   className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                 />
+                 <>
+                   <img 
+                     src={exercise.image} 
+                     alt={exercise.name} 
+                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                   />
+                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                     <Maximize2 className="text-white drop-shadow-md" size={32} />
+                   </div>
+                 </>
                ) : (
                  <>
                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20 z-0"></div>
@@ -144,6 +157,7 @@ const ExerciseCard = ({ exercise, onToggleSet, index }) => {
 export default function App() {
   const [painLevel, setPainLevel] = useState(null); // 'low', 'high'
   const [showConfetti, setShowConfetti] = useState(false);
+  const [modalImage, setModalImage] = useState(null); // Estado para a imagem em tela cheia
 
   const initialExercises = [
     {
@@ -155,7 +169,7 @@ export default function App() {
       completedSets: [false, false, false],
       timer: true,
       targetSeconds: 0,
-      image: 'image_b6866b.jpg', // Supondo que esta seja a primeira imagem enviada
+      image: 'image_b6866b.jpg', 
       description: '1. Cotovelos abaixo dos ombros.\n2. Corpo reto da cabeça aos calcanhares.\n3. Contraia glúteos e abdômen (como se fosse levar um soco).\n4. Não deixe o quadril cair.'
     },
     {
@@ -208,9 +222,6 @@ export default function App() {
   const [exercises, setExercises] = useState(initialExercises);
   const [recoveryDone, setRecoveryDone] = useState(false);
 
-  // Carregar estado (simulado, reseta ao recarregar página neste ambiente, mas usaria localStorage)
-  // useEffect(() => { ... }, []);
-
   const toggleSet = (exerciseIndex, setIndex) => {
     const newExercises = [...exercises];
     newExercises[exerciseIndex].completedSets[setIndex] = !newExercises[exerciseIndex].completedSets[setIndex];
@@ -230,7 +241,6 @@ export default function App() {
       totalSets += ex.sets;
       setsDone += ex.completedSets.filter(Boolean).length;
     });
-    // Adiciona recuperação como "1 set"
     totalSets += 1;
     if (recoveryDone) setsDone += 1;
     
@@ -240,8 +250,29 @@ export default function App() {
   const progress = calculateProgress();
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 font-sans selection:bg-blue-500 selection:text-white pb-20">
+    <div className="min-h-screen bg-black text-gray-100 font-sans selection:bg-blue-500 selection:text-white pb-20 relative">
       
+      {/* Modal de Imagem Fullscreen */}
+      {modalImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setModalImage(null)} // Fecha ao clicar fora
+        >
+          <button 
+            className="absolute top-4 right-4 p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700 transition-colors z-[110]"
+            onClick={() => setModalImage(null)}
+          >
+            <X size={24} />
+          </button>
+          <img 
+            src={modalImage} 
+            alt="Detalhe do exercício" 
+            className="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()} // Impede que clique na imagem feche o modal
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-900 to-gray-900 p-6 shadow-xl border-b border-gray-800 sticky top-0 z-50 backdrop-blur-md bg-opacity-90">
         <div className="max-w-2xl mx-auto">
@@ -333,6 +364,7 @@ export default function App() {
               exercise={exercise} 
               index={index} 
               onToggleSet={toggleSet} 
+              onImageClick={setModalImage}
             />
           ))}
         </section>
@@ -371,11 +403,10 @@ export default function App() {
         )}
 
         <div className="text-center text-gray-700 text-[10px] uppercase tracking-widest mt-12 pb-8">
-          Szymanski Advogados • Private Protocol v1.1
+          Szymanski Advogados • Private Protocol v1.2
         </div>
 
       </div>
     </div>
   );
 }
-// Atualização forçada
