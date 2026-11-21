@@ -1,0 +1,333 @@
+:root {
+  --ink: #4a2c12;
+  --gold: #ffd23f;
+  --red: #e53935;
+  --pink: #ff5fa2;
+  --cream: #fff8e1;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Baloo 2', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(#5ec8ff 0%, #b9ecff 55%, #8fd96b 55%, #6cc04a 100%);
+  overflow: hidden;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+}
+
+/* ---------- Placar ---------- */
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 4px 3px 5px;
+  text-align: center;
+  border: 3px solid transparent;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, border-color 0.2s;
+  min-width: 0;
+}
+
+.card.active {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
+
+.card .av { font-size: 24px; line-height: 1.15; }
+
+.card .nm {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--c);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card .st { font-size: 12px; font-weight: 800; }
+
+/* ---------- Tabuleiro ---------- */
+.board-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#board {
+  display: block;
+  border-radius: 24px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.msg {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 6px 12px;
+}
+
+/* ---------- Controles ---------- */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dice {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 34px;
+  color: var(--red);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn {
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  background: var(--gold);
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  padding: 10px 20px;
+  min-height: 56px;
+  box-shadow: 0 6px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.05s;
+}
+
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+
+.btn:disabled {
+  background: #d9d9d9;
+  color: #888;
+  border-color: #888;
+  box-shadow: 0 6px 0 #888;
+  cursor: default;
+}
+
+.btn.big { flex: 1; max-width: 300px; }
+
+/* ---------- Modal ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 20, 70, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 10;
+}
+
+.overlay.hidden { display: none; }
+
+.modal {
+  background: var(--cream);
+  border: 6px solid var(--ink);
+  border-radius: 26px;
+  padding: 16px 16px 20px;
+  width: min(100%, 460px);
+  max-height: 94%;
+  overflow: auto;
+  text-align: center;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.25);
+  animation: pop 0.35s ease-out;
+}
+
+@keyframes pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal h1 {
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--red);
+  text-shadow: 3px 3px 0 #fff, 5px 5px 0 var(--ink);
+  margin: 8px 0 12px;
+}
+
+.modal h2 {
+  font-size: 18px;
+  margin: 0;
+  color: #8a4b00;
+}
+
+.modal p { font-size: 18px; margin: 8px 0; line-height: 1.3; }
+
+.modal .btn { margin-top: 10px; }
+
+ol.rank {
+  padding: 0;
+  margin: 10px 0 14px;
+}
+
+ol.rank li {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 12px;
+  border-left: 8px solid var(--c, #999);
+  padding: 8px 12px;
+  margin: 6px 0;
+  font-weight: 800;
+  font-size: 17px;
+  text-align: left;
+}
+
+/* ---------- Minigames ---------- */
+.stage {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 4px solid var(--ink);
+  background: linear-gradient(#9be7ff, #e4f9ff);
+  margin-top: 8px;
+}
+
+.stage .hint { margin: 8px 0 0; font-size: 18px; }
+
+.big-score {
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 40px;
+  color: var(--red);
+}
+
+/* Minigame 1: pegue as estrelinhas */
+.falling {
+  position: absolute;
+  top: -50px;
+  font-size: 40px;
+  margin-left: -20px;
+  cursor: pointer;
+  animation: fall 2.6s linear forwards;
+}
+
+@keyframes fall {
+  to { transform: translateY(400px); }
+}
+
+.stage .timer {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 28px;
+  color: var(--red);
+}
+
+.stage .score-live {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 28px;
+  color: #2e7d32;
+}
+
+/* Minigame 2: corrida do arco-íris */
+.tapbtn {
+  width: 100%;
+  height: 170px;
+  margin-top: 36px;
+  border-radius: 30px;
+  font-family: 'Luckiest Guy', 'Baloo 2', sans-serif;
+  font-size: 46px;
+  color: #fff;
+  background: var(--pink);
+  border: 6px solid var(--ink);
+  box-shadow: 0 10px 0 var(--ink);
+  cursor: pointer;
+}
+
+.tapbtn:disabled { background: #bbb; box-shadow: 0 10px 0 #666; border-color: #666; }
+.tapbtn.squish { transform: scale(0.96); }
+
+.bar {
+  height: 20px;
+  background: #fff;
+  border-radius: 10px;
+  border: 3px solid var(--ink);
+  overflow: hidden;
+  margin: 12px 0 0;
+}
+
+.bar > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #43a047, var(--gold));
+}
+
+/* Minigame 3: pare na estrela */
+.meter {
+  position: relative;
+  height: 70px;
+  margin: 40px 14px 0;
+  border-radius: 16px;
+  border: 4px solid var(--ink);
+  background: linear-gradient(90deg, #ef5350 0%, #ffd23f 35%, #66bb6a 50%, #ffd23f 65%, #ef5350 100%);
+}
+
+.needle {
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  width: 10px;
+  margin-left: -5px;
+  border-radius: 6px;
+  background: var(--ink);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .falling { animation-duration: 0.01s; }
+  .modal { animation: none; }
+}
